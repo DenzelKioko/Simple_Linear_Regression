@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="" />
+
+<meta name="date" content="2025-07-18" />
+
+<title>Simple Linear Regression</title>
+
+<script src="simple_linear_regression_files/header-attrs-2.29/header-attrs.js"></script>
+<script src="simple_linear_regression_files/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="simple_linear_regression_files/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
+<script src="simple_linear_regression_files/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="simple_linear_regression_files/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="simple_linear_regression_files/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="simple_linear_regression_files/navigation-1.1/tabsets.js"></script>
+<link href="simple_linear_regression_files/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="simple_linear_regression_files/highlightjs-9.12.0/highlight.js"></script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Simple Linear Regression</h1>
+<h4 class="author"><Denzel Wambua></h4>
+<h4 class="date">2025-07-18</h4>
+
+</div>
+
+<div id="TOC">
+<ul>
+<li><a href="#load-the-dataset" id="toc-load-the-dataset"><span
+class="toc-section-number">1</span> Load the Dataset</a></li>
+<li><a href="#view-the-data-types" id="toc-view-the-data-types"><span
+class="toc-section-number">2</span> View the Data Types</a></li>
+<li><a href="#variance" id="toc-variance"><span
+class="toc-section-number">3</span> Variance:</a></li>
+<li><a href="#standard-deviation" id="toc-standard-deviation"><span
+class="toc-section-number">4</span> Standard Deviation:</a></li>
+<li><a href="#kurtosis" id="toc-kurtosis"><span
+class="toc-section-number">5</span> Kurtosis</a></li>
+<li><a href="#skewness" id="toc-skewness"><span
+class="toc-section-number">6</span> Skewness</a></li>
+<li><a href="#covariance" id="toc-covariance"><span
+class="toc-section-number">7</span> Covariance</a></li>
+<li><a href="#correlation" id="toc-correlation"><span
+class="toc-section-number">8</span> Correlation</a></li>
+<li><a href="#basic-visualizations" id="toc-basic-visualizations"><span
+class="toc-section-number">9</span> Basic Visualizations</a></li>
+<li><a href="#correlation-plot" id="toc-correlation-plot"><span
+class="toc-section-number">10</span> Correlation Plot</a></li>
+<li><a href="#scatter-plot" id="toc-scatter-plot"><span
+class="toc-section-number">11</span> Scatter Plot</a></li>
+<li><a href="#statistical-test-of-linear-regression"
+id="toc-statistical-test-of-linear-regression"><span
+class="toc-section-number">12</span> Statistical test of Linear
+Regression</a></li>
+<li><a href="#diagnostic-eda" id="toc-diagnostic-eda"><span
+class="toc-section-number">13</span> Diagnostic EDA</a>
+<ul>
+<li><a href="#test-of-linearity" id="toc-test-of-linearity"><span
+class="toc-section-number">13.1</span> Test of Linearity</a></li>
+<li><a href="#test-of-independence-of-errors"
+id="toc-test-of-independence-of-errors"><span
+class="toc-section-number">13.2</span> Test of Independence of
+Errors</a></li>
+<li><a href="#test-of-normality" id="toc-test-of-normality"><span
+class="toc-section-number">13.3</span> Test of Normality</a></li>
+</ul></li>
+<li><a href="#test-of-homoscedasticity"
+id="toc-test-of-homoscedasticity"><span
+class="toc-section-number">14</span> Test of Homoscedasticity</a></li>
+<li><a href="#quantitative-validation-of-assumptions"
+id="toc-quantitative-validation-of-assumptions"><span
+class="toc-section-number">15</span> Quantitative Validation of
+Assumptions</a></li>
+</ul>
+</div>
+
+<div id="load-the-dataset" class="section level1" number="1">
+<h1><span class="header-section-number">1</span> Load the Dataset</h1>
+<pre class="r"><code>if (!&quot;pacman&quot; %in% installed.packages()[, &quot;Package&quot;]) {
+install.packages(&quot;pacman&quot;, dependencies = TRUE)
+library(&quot;pacman&quot;, character.only = TRUE)
+}
+pacman::p_load(&quot;here&quot;)
+knitr::opts_knit$set(root.dir = here::here())</code></pre>
+<pre class="r"><code>pacman::p_load(&quot;readr&quot;)
+clv_data &lt;- read_csv(&quot;./data/clv_data.csv&quot;)</code></pre>
+<pre><code>## Rows: 500 Columns: 2
+## ── Column specification ────────────────────────────────────────────────────────
+## Delimiter: &quot;,&quot;
+## dbl (2): purchase_frequency, customer_lifetime_value
+## 
+## ℹ Use `spec()` to retrieve the full column specification for this data.
+## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
+<pre class="r"><code>head(clv_data)</code></pre>
+<pre><code>## # A tibble: 6 × 2
+##   purchase_frequency customer_lifetime_value
+##                &lt;dbl&gt;                   &lt;dbl&gt;
+## 1                  3                   110. 
+## 2                  7                   190. 
+## 3                  6                   160. 
+## 4                  2                    94.4
+## 5                  4                   133. 
+## 6                  8                   223.</code></pre>
+</div>
+<div id="view-the-data-types" class="section level1" number="2">
+<h1><span class="header-section-number">2</span> View the Data
+Types</h1>
+<pre class="r"><code>sapply(clv_data, class)</code></pre>
+<pre><code>##      purchase_frequency customer_lifetime_value 
+##               &quot;numeric&quot;               &quot;numeric&quot;</code></pre>
+<pre class="r"><code>str(clv_data)</code></pre>
+<pre><code>## spc_tbl_ [500 × 2] (S3: spec_tbl_df/tbl_df/tbl/data.frame)
+##  $ purchase_frequency     : num [1:500] 3 7 6 2 4 8 0 4 8 3 ...
+##  $ customer_lifetime_value: num [1:500] 110.3 190.2 160 94.4 133.2 ...
+##  - attr(*, &quot;spec&quot;)=
+##   .. cols(
+##   ..   purchase_frequency = col_double(),
+##   ..   customer_lifetime_value = col_double()
+##   .. )
+##  - attr(*, &quot;problems&quot;)=&lt;externalptr&gt;</code></pre>
+<pre class="r"><code>summary(clv_data)</code></pre>
+<pre><code>##  purchase_frequency customer_lifetime_value
+##  Min.   :-1.000     Min.   : 26.13         
+##  1st Qu.: 4.000     1st Qu.:122.04         
+##  Median : 5.000     Median :148.21         
+##  Mean   : 4.914     Mean   :148.25         
+##  3rd Qu.: 6.000     3rd Qu.:175.88         
+##  Max.   :11.000     Max.   :262.04</code></pre>
+</div>
+<div id="variance" class="section level1" number="3">
+<h1><span class="header-section-number">3</span> Variance:</h1>
+<pre class="r"><code>#&#39;sapply()&#39; is designed to apply a function to a variable in a dataset
+#In this case, I used &#39;sapply()&#39; to apply the &#39;var()&#39; function used to compute the variance.
+#High variability means that the values are less consistent, thus making it harder to make predictions.
+sapply(clv_data[,], var)</code></pre>
+<pre><code>##      purchase_frequency customer_lifetime_value 
+##                4.146898             1642.315996</code></pre>
+</div>
+<div id="standard-deviation" class="section level1" number="4">
+<h1><span class="header-section-number">4</span> Standard
+Deviation:</h1>
+<pre class="r"><code>sapply(clv_data[,],sd)</code></pre>
+<pre><code>##      purchase_frequency customer_lifetime_value 
+##                2.036393               40.525498</code></pre>
+</div>
+<div id="kurtosis" class="section level1" number="5">
+<h1><span class="header-section-number">5</span> Kurtosis</h1>
+<pre class="r"><code>#Informs how often outliers occur 
+#Different formulas for calculating hence we specify type 2 which is used in other software
+#Kurtosis = 3 -&gt; medium no. of outliers
+#Kurtosis&lt;3 -&gt; low no. of ouliers and vice versa
+pacman::p_load(&quot;e1071&quot;)
+sapply(clv_data[,],kurtosis, type=2)</code></pre>
+<pre><code>##      purchase_frequency customer_lifetime_value 
+##              -0.1220038              -0.1484811</code></pre>
+</div>
+<div id="skewness" class="section level1" number="6">
+<h1><span class="header-section-number">6</span> Skewness</h1>
+<pre class="r"><code>#Used to ID the asymmetry of distribution of results
+#Similar to kurtosis we have type 2 which is widely used by other apps :)
+#-0.4&lt;Skewness&lt;0.4 inclusive implies no skew i.e it is a normal distribution
+#Above 0.4 implies +ve skew
+#below -0.4 implies -ve skew: a left-skewed distribution
+sapply(clv_data[,], skewness, type = 2)</code></pre>
+<pre><code>##      purchase_frequency customer_lifetime_value 
+##             -0.04021915             -0.01608242</code></pre>
+</div>
+<div id="covariance" class="section level1" number="7">
+<h1><span class="header-section-number">7</span> Covariance</h1>
+<pre class="r"><code>#Indicates the direction of the linear relationship betweeen 2 variables
+#Assesses whether increase in one leads to an increase in the other
+#+ve covariance -&gt; when one increases the other increases
+#-ve  covariance -&gt; when one increases the other decreases
+#Zero covariance -&gt; no relationship
+#Shows direction of relationship but not strength
+cov(clv_data, method = &quot;spearman&quot;)</code></pre>
+<pre><code>##                         purchase_frequency customer_lifetime_value
+## purchase_frequency                20409.91                20235.73
+## customer_lifetime_value           20235.73                20874.99</code></pre>
+</div>
+<div id="correlation" class="section level1" number="8">
+<h1><span class="header-section-number">8</span> Correlation</h1>
+<pre class="r"><code>#Strong correlation enables better prediction of independent variable
+#Only useful if there is linear association/strong correlation
+#Spearman&#39;s rank correlation rho is used to measure statistical significance of the correlation
+#Monotomic relationship -&gt; one var increases and the other either increases consistently or consistently decreases
+#Rate of change may vary but direction is preserved
+cor.test(clv_data$customer_lifetime_value, clv_data$purchase_frequency, method = &quot;spearman&quot;)</code></pre>
+<pre><code>## 
+##  Spearman&#39;s rank correlation rho
+## 
+## data:  clv_data$customer_lifetime_value and clv_data$purchase_frequency
+## S = 409190, p-value &lt; 2.2e-16
+## alternative hypothesis: true rho is not equal to 0
+## sample estimates:
+##       rho 
+## 0.9803588</code></pre>
+<p>To view correlation of all variables</p>
+<pre class="r"><code>cor(clv_data, method = &quot;spearman&quot;)</code></pre>
+<pre><code>##                         purchase_frequency customer_lifetime_value
+## purchase_frequency               1.0000000               0.9803588
+## customer_lifetime_value          0.9803588               1.0000000</code></pre>
+</div>
+<div id="basic-visualizations" class="section level1" number="9">
+<h1><span class="header-section-number">9</span> Basic
+Visualizations</h1>
+<pre class="r"><code># par(mfrow = c(1, 2)) This  is used to divide the area used to plot the visualization into a 1 row by 2 columns grid
+# for (i in 1:2) This is used to identify the variable (column) that is being processed
+# clv_data[[i]] This is used to extract the i-th column as a vector
+# hist() This is the fnctn used to plot the histogram
+par(mfrow = c(1, 2))
+for (i in 1:2) {
+  if (is.numeric(clv_data[[i]])){
+    hist(clv_data[[i]],
+         main = names(clv_data)[i],
+         xlab = names(clv_data)[i])
+  } else {
+    message(paste(&quot;Column&quot;, names(clv_data)[i], &quot;is not numeric and will be skipped&quot;))
+  }
+}</code></pre>
+<p><img
+src="simple_linear_regression_files/figure-html/visualization_histogram-1.png" /><!-- --></p>
+<pre class="r"><code>par(mfrow = c(1, 2))
+for (i in 1:2) {
+  if (is.numeric(clv_data[[i]])) {
+    boxplot(clv_data[[i]], main = names(clv_data)[i])
+  } else {
+    message(paste(&quot;Column&quot;, names(clv_data)[i], &quot;is not numeric and will be skipped&quot;))
+  }
+}</code></pre>
+<p><img
+src="simple_linear_regression_files/figure-html/visualization_boxplot-1.png" /><!-- --></p>
+<pre class="r"><code>pacman::p_load(&quot;Amelia&quot;)
+
+missmap(clv_data, col = c(&quot;red&quot;, &quot;grey&quot;), legend = TRUE)</code></pre>
+<p><img
+src="simple_linear_regression_files/figure-html/missing_data_plot-1.png" /><!-- --></p>
+</div>
+<div id="correlation-plot" class="section level1" number="10">
+<h1><span class="header-section-number">10</span> Correlation Plot</h1>
+<pre class="r"><code>pacman::p_load(&quot;ggcorrplot&quot;)
+ggcorrplot(cor(clv_data[,]))</code></pre>
+<p><img
+src="simple_linear_regression_files/figure-html/correlation_plot-1.png" /><!-- --></p>
+</div>
+<div id="scatter-plot" class="section level1" number="11">
+<h1><span class="header-section-number">11</span> Scatter Plot</h1>
+<pre class="r"><code>pacman::p_load(&quot;corrplot&quot;)
+
+pairs(clv_data$customer_lifetime_value ~ . , data = clv_data, col = clv_data$customer_lifetime_value)</code></pre>
+<p><img
+src="simple_linear_regression_files/figure-html/scatter_plot_1-1.png" /><!-- --></p>
+<pre class="r"><code>pacman::p_load(&quot;ggplot2&quot;)
+ggplot(clv_data,
+       aes(x = purchase_frequency, y = customer_lifetime_value)) + 
+  geom_point() +
+geom_smooth(method = lm) +
+  labs(
+    title = &quot;Relationship between customer lifetime value and purchase frequency&quot;,
+    x = &quot;Purchase Frequency&quot;,
+    y = &quot;Customer Lifetime Value&quot;
+  )</code></pre>
+<p><img
+src="simple_linear_regression_files/figure-html/scatter_plot_2-1.png" /><!-- --></p>
+</div>
+<div id="statistical-test-of-linear-regression" class="section level1"
+number="12">
+<h1><span class="header-section-number">12</span> Statistical test of
+Linear Regression</h1>
+<pre class="r"><code>slr_test &lt;- lm(customer_lifetime_value ~ purchase_frequency, data = clv_data)
+
+#To view result
+summary(slr_test)</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = customer_lifetime_value ~ purchase_frequency, data = clv_data)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -19.1176  -5.6169  -0.0491   5.6618  20.4837 
+## 
+## Coefficients:
+##                    Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)         52.2538     0.9042   57.79   &lt;2e-16 ***
+## purchase_frequency  19.5356     0.1700  114.91   &lt;2e-16 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 7.734 on 498 degrees of freedom
+## Multiple R-squared:  0.9637, Adjusted R-squared:  0.9636 
+## F-statistic: 1.32e+04 on 1 and 498 DF,  p-value: &lt; 2.2e-16</code></pre>
+<pre class="r"><code>#Obtain confidence intervals
+confint(slr_test, level = 0.95)</code></pre>
+<pre><code>##                       2.5 %   97.5 %
+## (Intercept)        50.47731 54.03036
+## purchase_frequency 19.20159 19.86965</code></pre>
+</div>
+<div id="diagnostic-eda" class="section level1" number="13">
+<h1><span class="header-section-number">13</span> Diagnostic EDA</h1>
+<p>Diagnostic EDA tests validity of the model’s assumptions before
+interpreting results. This helps prevent incorrect conclusions</p>
+<div id="test-of-linearity" class="section level2" number="13.1">
+<h2><span class="header-section-number">13.1</span> Test of
+Linearity</h2>
+<pre class="r"><code>plot(slr_test, which = 1)</code></pre>
+<p><img
+src="simple_linear_regression_files/figure-html/test_of_linearity-1.png" /><!-- --></p>
+<pre class="r"><code># Tests whether relationship between dependent and independent variables is linear
+# A plot of residuals vs fitted values enables test for linearity
+# For the model to pass there should be no pattern in the distribution of residuals and the residuals should be randomly placed around the 0.0 residual line
+# i.e the residuals should randomly vary around the mean of the value of the response variable</code></pre>
+</div>
+<div id="test-of-independence-of-errors" class="section level2"
+number="13.2">
+<h2><span class="header-section-number">13.2</span> Test of Independence
+of Errors</h2>
+<p>This test is necessary to confirm each observation is independent of
+each other.</p>
+<p>It helps to identify autocorrelation which occurs when data is
+collected over a close period of time or when an observation is related
+to another.</p>
+<p>Autocorrelation leads to underestimated standard errors and inflated
+t-statistics / findings appear bigger than they actually are.</p>
+<p>Durbin Watson Test</p>
+<ul>
+<li><p>H0 -&gt; There is no autocorrelation (null hypothesis)</p></li>
+<li><p>H1 -&gt; There is autocorrelation</p></li>
+</ul>
+<p>If the p-value &gt; 5, no evidence to reject null hypothesis “There
+is no autocorrelation”</p>
+<pre class="r"><code>pacman::p_load(&quot;lmtest&quot;)
+dwtest(slr_test)</code></pre>
+<pre><code>## 
+##  Durbin-Watson test
+## 
+## data:  slr_test
+## DW = 1.9104, p-value = 0.1573
+## alternative hypothesis: true autocorrelation is greater than 0</code></pre>
+<pre class="r"><code>#The results show a p-value of 0.1573 therefore the test of independence of errors around the regression line passes</code></pre>
+</div>
+<div id="test-of-normality" class="section level2" number="13.3">
+<h2><span class="header-section-number">13.3</span> Test of
+Normality</h2>
+<p>It assesses whether the residuals are normally distributed i.e most
+residuals(errors) are close to zero and large errors are rare</p>
+<p>A Q-Q plot can be used for this</p>
+<p>It is a scatter-plot of the quantities of the residuals against
+quantiles of a normal distribution</p>
+<p>Quantiles are statistical values that divide a data set or
+probability into equal-sized intervals e.g quartiles, percentiles,
+deciles(10 equal parts) etc</p>
+<p>If the points in the plot fall along a straight line, then the
+normality assumption is satisfied.</p>
+<pre class="r"><code>plot(slr_test, which = 2)</code></pre>
+<p><img
+src="simple_linear_regression_files/figure-html/test_of_normality-1.png" /><!-- --></p>
+</div>
+</div>
+<div id="test-of-homoscedasticity" class="section level1" number="14">
+<h1><span class="header-section-number">14</span> Test of
+Homoscedasticity</h1>
+<p>Homoscedasticity requires that the spread of residuals should be
+constant across all levels of the independent variable. A scale-location
+plot (a.k.a. spread-location plot) can be used to conduct a test of
+homoscedasticity.</p>
+<p>The x-axis shows the fitted (predicted) values from the model and the
+y-axis shows the square root of the standardized residuals. The red line
+is added to help visualize any patterns.</p>
+<p>In a model with homoscedastic errors (equal variance across all
+predicted values):</p>
+<p>• Points should be randomly scattered around a horizontal line</p>
+<p>• The smooth line should be approximately horizontal</p>
+<p>• The vertical spread of points should be roughly equal across all
+fitted values</p>
+<p>• No obvious patterns, funnels, or trends should be visible</p>
+<p>Points forming a cone shape that widens from left to right suggests
+heteroscedasticity with increasing variance for larger fitted
+values.</p>
+<pre class="r"><code>plot(slr_test, which = 3)</code></pre>
+<p><img
+src="simple_linear_regression_files/figure-html/test_of_homoscedasticity-1.png" /><!-- --></p>
+</div>
+<div id="quantitative-validation-of-assumptions" class="section level1"
+number="15">
+<h1><span class="header-section-number">15</span> Quantitative
+Validation of Assumptions</h1>
+<p>The graphical representations of the various tests of assumptions
+should be accompanied by quantitative values. The gvlma package(Global
+Validation of Linear Models Assumptions) is useful for this purpose.</p>
+<pre class="r"><code>pacman::p_load(&quot;gvlma&quot;)
+gvlma_results &lt;- gvlma(slr_test)
+summary(gvlma_results)</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = customer_lifetime_value ~ purchase_frequency, data = clv_data)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -19.1176  -5.6169  -0.0491   5.6618  20.4837 
+## 
+## Coefficients:
+##                    Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)         52.2538     0.9042   57.79   &lt;2e-16 ***
+## purchase_frequency  19.5356     0.1700  114.91   &lt;2e-16 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 7.734 on 498 degrees of freedom
+## Multiple R-squared:  0.9637, Adjusted R-squared:  0.9636 
+## F-statistic: 1.32e+04 on 1 and 498 DF,  p-value: &lt; 2.2e-16
+## 
+## 
+## ASSESSMENT OF THE LINEAR MODEL ASSUMPTIONS
+## USING THE GLOBAL TEST ON 4 DEGREES-OF-FREEDOM:
+## Level of Significance =  0.05 
+## 
+## Call:
+##  gvlma(x = slr_test) 
+## 
+##                      Value p-value                Decision
+## Global Stat        5.08943 0.27824 Assumptions acceptable.
+## Skewness           0.03973 0.84201 Assumptions acceptable.
+## Kurtosis           3.61252 0.05735 Assumptions acceptable.
+## Link Function      0.01459 0.90385 Assumptions acceptable.
+## Heteroscedasticity 1.42258 0.23298 Assumptions acceptable.</code></pre>
+</div>
+
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,10 @@
+name: Publish Document
+title:
+username:
+account: rpubs
+server: rpubs.com
+hostUrl: rpubs.com
+appId: https://api.rpubs.com/api/v1/document/1330538/cfaa92f1f9b1442790405a660236b61b
+bundleId: https://api.rpubs.com/api/v1/document/1330538/cfaa92f1f9b1442790405a660236b61b
+url: http://rpubs.com/DenzelKioko/1330538
+version: 1
